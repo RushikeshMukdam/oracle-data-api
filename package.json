@@ -1,0 +1,28 @@
+{
+  "name": "oracle-data-api",
+  "version": "1.0.0",
+  "description": "Standalone Node.js REST API for Oracle Database queries",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test:db": "node test-db-connection.js"
+  },
+  "keywords": [
+    "node",
+    "express",
+    "oracle",
+    "oracledb",
+    "rest-api"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.9",
+    "express": "^5.3.0",
+    "oracledb": "^26.0.0",
+    "swagger-ui-express": "^5.0.1"
+  }
+}

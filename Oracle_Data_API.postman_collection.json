@@ -1,0 +1,291 @@
+{
+  "info": {
+    "name": "Oracle Data API",
+    "_postman_id": "c1f7a4e2-8924-4f0e-b7d1-0f81d4a99123",
+    "description": "Enterprise REST API for Oracle Database queries with semantic endpoints optimized for AI agents and Postman testing.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "0. Root Documentation",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/",
+          "host": ["{{baseUrl}}"],
+          "path": [""]
+        }
+      }
+    },
+    {
+      "name": "1. Health & Security Audit",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "health"]
+        }
+      }
+    },
+    {
+      "name": "2. OpenAPI / Swagger JSON Spec",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api-docs/swagger.json",
+          "host": ["{{baseUrl}}"],
+          "path": ["api-docs", "swagger.json"]
+        }
+      }
+    },
+    {
+      "name": "3. BOM Explosion - Default (Item 22305174, Org 82)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/bom/explosion",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "bom", "explosion"]
+        }
+      }
+    },
+    {
+      "name": "4. BOM Explosion - Custom Filters",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/bom/explosion?itemNumber=22305174&orgId=82&limit=20",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "bom", "explosion"],
+          "query": [
+            {
+              "key": "itemNumber",
+              "value": "22305174"
+            },
+            {
+              "key": "orgId",
+              "value": "82"
+            },
+            {
+              "key": "limit",
+              "value": "20"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "5. Inward Gate Entry - Date Range (July 2026)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/gate-entry/inward?startDate=2026-07-01&endDate=2026-08-01",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "gate-entry", "inward"],
+          "query": [
+            {
+              "key": "startDate",
+              "value": "2026-07-01"
+            },
+            {
+              "key": "endDate",
+              "value": "2026-08-01"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "6. Inward Gate Entry - Filter by Vehicle Number",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/gate-entry/inward?vehicleNumber=MH-12-RN-4821",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "gate-entry", "inward"],
+          "query": [
+            {
+              "key": "vehicleNumber",
+              "value": "MH-12-RN-4821"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "7. Inward Gate Entry - Filter by Vendor Name",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/gate-entry/inward?vendorName=Bharat Forge",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "gate-entry", "inward"],
+          "query": [
+            {
+              "key": "vendorName",
+              "value": "Bharat Forge"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "8. Inward Gate Entry - Filter by GRN",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/gate-entry/inward?grn=5001390",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "gate-entry", "inward"],
+          "query": [
+            {
+              "key": "grn",
+              "value": "5001390"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "9. Outward Gate Entry - Default (August 2026)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/gate-entry/outward?startDate=2026-08-01&endDate=2026-09-01",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "gate-entry", "outward"],
+          "query": [
+            {
+              "key": "startDate",
+              "value": "2026-08-01"
+            },
+            {
+              "key": "endDate",
+              "value": "2026-09-01"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "10. Outward Gate Entry - Filter by Customer",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/gate-entry/outward?customer=Mahindra",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "gate-entry", "outward"],
+          "query": [
+            {
+              "key": "customer",
+              "value": "Mahindra"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "11. Outward Gate Entry - Filter by Invoice Number",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/gate-entry/outward?invoiceNo=INV-26-8801",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "gate-entry", "outward"],
+          "query": [
+            {
+              "key": "invoiceNo",
+              "value": "INV-26-8801"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "12. Pending POs - All Open Orders",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/purchase-orders/pending",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "purchase-orders", "pending"]
+        }
+      }
+    },
+    {
+      "name": "13. Pending POs - Filter by Item Number",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/purchase-orders/pending?itemNumber=22305174",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "purchase-orders", "pending"],
+          "query": [
+            {
+              "key": "itemNumber",
+              "value": "22305174"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "14. Pending POs - Filter by Supplier",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/purchase-orders/pending?supplier=Tata Steel",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "purchase-orders", "pending"],
+          "query": [
+            {
+              "key": "supplier",
+              "value": "Tata Steel"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "15. Pending POs - Filter by PO Number",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/purchase-orders/pending?poNum=PO-2026-4401",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "purchase-orders", "pending"],
+          "query": [
+            {
+              "key": "poNum",
+              "value": "PO-2026-4401"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
