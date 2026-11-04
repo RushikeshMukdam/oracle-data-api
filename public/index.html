@@ -1,14 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Saksham AI - Database Query System</title>
+  <title>Saksham AI - Database Query & Sync System</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background: #090d16;
@@ -17,6 +25,7 @@
       display: flex;
       flex-direction: column;
     }
+
     header {
       background: #111827;
       border-bottom: 1px solid #1f2937;
@@ -24,12 +33,17 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
+
     .logo-container {
       display: flex;
       align-items: center;
       gap: 12px;
     }
+
     .logo-badge {
       background: linear-gradient(135deg, #2563eb, #38bdf8);
       color: white;
@@ -39,16 +53,24 @@
       border-radius: 8px;
       letter-spacing: 0.05em;
     }
+
     header h1 {
       font-size: 1.15rem;
       font-weight: 600;
       color: #f3f4f6;
     }
+
     header h1 span {
       color: #9ca3af;
       font-weight: 400;
       font-size: 0.95rem;
     }
+
+    .status-group {
+      display: flex;
+      gap: 10px;
+    }
+
     .status-pill {
       display: flex;
       align-items: center;
@@ -61,6 +83,7 @@
       font-size: 0.8rem;
       font-weight: 500;
     }
+
     .status-dot {
       width: 8px;
       height: 8px;
@@ -68,6 +91,18 @@
       border-radius: 50%;
       box-shadow: 0 0 8px #10b981;
     }
+
+    .status-pill-pg {
+      background: rgba(56, 189, 248, 0.1);
+      border-color: rgba(56, 189, 248, 0.25);
+      color: #38bdf8;
+    }
+
+    .status-dot-pg {
+      background: #38bdf8;
+      box-shadow: 0 0 8px #38bdf8;
+    }
+
     main {
       flex: 1;
       padding: 24px;
@@ -76,8 +111,25 @@
       width: 100%;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 24px;
     }
+
+    .section-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #f3f4f6;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+
+    .section-desc {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      margin-bottom: 14px;
+    }
+
     .card {
       background: #111827;
       border: 1px solid #1f2937;
@@ -85,12 +137,14 @@
       padding: 20px;
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
     }
+
     .card-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 12px;
     }
+
     .card-title {
       font-size: 0.9rem;
       font-weight: 600;
@@ -98,11 +152,181 @@
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
+
+    /* Queries Grid */
+    .queries-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+      gap: 16px;
+    }
+
+    .query-item-card {
+      background: #0d131f;
+      border: 1px solid #1f2937;
+      border-radius: 10px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.2s;
+    }
+
+    .query-item-card:hover {
+      border-color: #374151;
+      background: #101726;
+    }
+
+    .query-item-card.active-card {
+      border-color: #2563eb;
+      background: #0f172a;
+      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.2);
+    }
+
+    .query-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+
+    .query-num {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #38bdf8;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .query-badge {
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .badge-active {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .badge-pending {
+      background: rgba(148, 163, 184, 0.1);
+      color: #94a3b8;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .query-name {
+      font-size: 1.02rem;
+      font-weight: 600;
+      color: #f8fafc;
+      margin-bottom: 6px;
+    }
+
+    .query-desc {
+      font-size: 0.825rem;
+      color: #94a3b8;
+      line-height: 1.45;
+      margin-bottom: 14px;
+    }
+
+    .table-target {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.76rem;
+      color: #60a5fa;
+      background: rgba(37, 99, 235, 0.1);
+      padding: 4px 8px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-bottom: 14px;
+    }
+
+    .query-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: auto;
+    }
+
+    .btn-update {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #fff;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-update:hover {
+      background: linear-gradient(135deg, #34d399, #10b981);
+      transform: translateY(-1px);
+    }
+
+    .btn-update:disabled {
+      background: #374151;
+      color: #9ca3af;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-view {
+      background: #1f2937;
+      border: 1px solid #374151;
+      color: #cbd5e1;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+
+    .btn-view:hover {
+      background: #374151;
+      color: #fff;
+    }
+
+    /* Sync Alert Box */
+    .sync-alert {
+      display: none;
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-size: 0.875rem;
+      margin-top: 14px;
+      animation: fadeIn 0.2s ease-in;
+    }
+
+    .sync-alert-success {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid #10b981;
+      color: #a7f3d0;
+    }
+
+    .sync-alert-error {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid #ef4444;
+      color: #fca5a5;
+    }
+
+    .sync-alert-loading {
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid #38bdf8;
+      color: #bae6fd;
+    }
+
+    /* Query Editor & Playground */
     .sample-buttons {
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
     }
+
     .btn-sm {
       background: #1f2937;
       border: 1px solid #374151;
@@ -114,27 +338,22 @@
       font-weight: 500;
       transition: all 0.15s;
     }
+
     .btn-sm:hover {
       background: #374151;
       color: #fff;
       border-color: #4b5563;
     }
-    .btn-sm-primary {
-      background: #1e3a8a;
-      border-color: #2563eb;
-      color: #93c5fd;
-    }
-    .btn-sm-primary:hover {
-      background: #2563eb;
-      color: #fff;
-    }
+
     .textarea-wrapper {
       position: relative;
     }
+
     textarea {
       width: 100%;
-      min-height: 160px;
-      max-height: 480px;
+      min-height: 280px;
+      height: 340px;
+      max-height: 750px;
       background: #090d16;
       border: 1px solid #374151;
       border-radius: 8px;
@@ -147,16 +366,19 @@
       outline: none;
       transition: border-color 0.2s, box-shadow 0.2s;
     }
+
     textarea:focus {
       border-color: #38bdf8;
       box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
     }
+
     .actions-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-top: 14px;
     }
+
     .btn-execute {
       background: linear-gradient(135deg, #2563eb, #1d4ed8);
       color: #fff;
@@ -172,20 +394,76 @@
       transition: all 0.2s;
       box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
     }
+
     .btn-execute:hover {
       background: linear-gradient(135deg, #3b82f6, #2563eb);
       transform: translateY(-1px);
     }
+
     .btn-execute:disabled {
       background: #374151;
       cursor: not-allowed;
       transform: none;
       box-shadow: none;
     }
+
+    .btn-update-playground {
+      background: linear-gradient(135deg, #059669, #10b981);
+      color: #fff;
+      border: none;
+      padding: 10px 24px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+      transition: all 0.2s;
+    }
+
+    .btn-update-playground:hover {
+      background: linear-gradient(135deg, #047857, #059669);
+      box-shadow: 0 4px 8px rgba(16, 185, 129, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .btn-update-playground:disabled {
+      background: #374151;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .table-dropdown {
+      background: #090d16;
+      border: 1px solid #374151;
+      color: #38bdf8;
+      font-family: 'JetBrains Mono', Consolas, monospace;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 9px 12px;
+      border-radius: 6px;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .table-dropdown:focus {
+      border-color: #38bdf8;
+    }
+
+    .table-dropdown option {
+      background: #111827;
+      color: #f3f4f6;
+    }
+
     .shortcut-hint {
       color: #94a3b8;
       font-size: 0.8rem;
     }
+
     .analysis-panel {
       display: none;
       background: #172033;
@@ -198,20 +476,24 @@
       flex-wrap: wrap;
       gap: 12px;
     }
+
     .stats-group {
       display: flex;
       gap: 24px;
       flex-wrap: wrap;
     }
+
     .stat-item {
       font-size: 0.85rem;
       color: #94a3b8;
     }
+
     .stat-item strong {
       color: #38bdf8;
       font-weight: 600;
       margin-left: 4px;
     }
+
     .error-card {
       display: none;
       background: #3b0707;
@@ -220,6 +502,7 @@
       padding: 16px;
       color: #fca5a5;
     }
+
     .error-card h4 {
       font-size: 0.95rem;
       margin-bottom: 6px;
@@ -228,12 +511,14 @@
       align-items: center;
       gap: 8px;
     }
+
     .error-card .msg {
       font-family: monospace;
       font-size: 0.875rem;
       margin-bottom: 8px;
       white-space: pre-wrap;
     }
+
     .error-card .hint {
       font-size: 0.825rem;
       color: #fecaca;
@@ -241,12 +526,14 @@
       padding: 8px 12px;
       border-radius: 4px;
     }
+
     .results-card {
       display: flex;
       flex-direction: column;
       flex: 1;
       min-height: 380px;
     }
+
     .results-toolbar {
       display: flex;
       justify-content: space-between;
@@ -255,6 +542,7 @@
       gap: 12px;
       flex-wrap: wrap;
     }
+
     .search-input {
       background: #090d16;
       border: 1px solid #374151;
@@ -265,9 +553,11 @@
       width: 260px;
       outline: none;
     }
+
     .search-input:focus {
       border-color: #38bdf8;
     }
+
     .table-container {
       overflow: auto;
       max-height: 580px;
@@ -275,18 +565,21 @@
       border-radius: 8px;
       background: #090d16;
     }
+
     table {
       width: 100%;
       border-collapse: collapse;
       font-size: 0.85rem;
       text-align: left;
     }
+
     thead {
       background: #111827;
       position: sticky;
       top: 0;
       z-index: 2;
     }
+
     th {
       padding: 10px 14px;
       font-weight: 600;
@@ -294,6 +587,7 @@
       border-bottom: 2px solid #1f2937;
       white-space: nowrap;
     }
+
     td {
       padding: 9px 14px;
       border-bottom: 1px solid #1a2234;
@@ -303,50 +597,214 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    tr:nth-child(even) { background: rgba(255, 255, 255, 0.015); }
-    tr:hover { background: rgba(56, 189, 248, 0.06); }
-    .null-val { color: #475569; font-style: italic; }
+
+    tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.015);
+    }
+
+    tr:hover {
+      background: rgba(56, 189, 248, 0.06);
+    }
+
+    .null-val {
+      color: #475569;
+      font-style: italic;
+    }
+
     .empty-state {
       padding: 60px 20px;
       text-align: center;
       color: #64748b;
       font-size: 0.95rem;
     }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-4px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
   </style>
 </head>
+
 <body>
   <header>
     <div class="logo-container">
       <div class="logo-badge">SAKSHAM AI</div>
-      <h1>Database Query System <span>&bull; Bajaj Indef</span></h1>
+      <h1>Database Query & Sync Engine <span>&bull; Bajaj Indef</span></h1>
     </div>
-    <div class="status-pill">
-      <div class="status-dot"></div>
-      <span>Oracle 19c Connected</span>
+    <div class="status-group">
+      <div class="status-pill">
+        <div class="status-dot"></div>
+        <span>Oracle 19c Live</span>
+      </div>
+      <div class="status-pill status-pill-pg">
+        <div class="status-dot status-dot-pg"></div>
+        <span>PostgreSQL (Neon)</span>
+      </div>
     </div>
   </header>
 
   <main>
-    <!-- Query Input Section -->
+    <!-- SECTION 1: All 4 Queries & PostgreSQL Sync -->
+    <div class="card">
+      <div class="section-title">
+        <span>📦 Predefined Enterprise Queries</span>
+      </div>
+      <div class="section-desc">
+        Standard Oracle ERP queries. Click <strong>Update</strong> to execute the query live and safely refresh its
+        PostgreSQL (Neon DB) table within a transaction.
+      </div>
+
+      <div class="queries-grid" id="queriesGrid">
+        <!-- Query 1: Pending Purchase Orders (Active Update) -->
+        <div class="query-item-card active-card">
+          <div>
+            <div class="query-item-header">
+              <span class="query-num">Query 1 &bull; Purchasing</span>
+              <span class="query-badge badge-active">Update Active</span>
+            </div>
+            <div class="query-name">Pending Purchase Orders</div>
+            <div class="query-desc">
+              Approved purchase orders and blanket releases with pending balance quantities greater than 0.
+            </div>
+            <div class="table-target">
+              Table: <strong>pending_purchase_orders</strong>
+            </div>
+          </div>
+          <div class="query-actions">
+            <button class="btn-update" id="btnUpdatePO" onclick="updateQueryData('pending_po', this)">
+              <span>🔄 Update PostgreSQL</span>
+            </button>
+            <button class="btn-view" onclick="loadQueryIntoEditor('pending_po')">
+              👁️ Load in Editor
+            </button>
+          </div>
+        </div>
+
+        <!-- Query 2: Inward Gate Entry (Active Update) -->
+        <div class="query-item-card active-card">
+          <div>
+            <div class="query-item-header">
+              <span class="query-num">Query 2 &bull; Procurement</span>
+              <span class="query-badge badge-active">Update Active</span>
+            </div>
+            <div class="query-name">Inward Gate Entry & GRN</div>
+            <div class="query-desc">
+              Tracks factory vehicle arrivals, vendor challans, transporter info, and GRN shipment receipts.
+            </div>
+            <div class="table-target">
+              Table: <strong>gate_inward_entries</strong>
+            </div>
+          </div>
+          <div class="query-actions">
+            <button class="btn-update" id="btnUpdateInward" onclick="updateQueryData('inward_gate', this)">
+              <span>🔄 Update PostgreSQL</span>
+            </button>
+            <button class="btn-view" onclick="loadQueryIntoEditor('inward_gate')">
+              👁️ Load in Editor
+            </button>
+          </div>
+        </div>
+
+        <!-- Query 3: Outward Gate Entry (Active Update) -->
+        <div class="query-item-card active-card">
+          <div>
+            <div class="query-item-header">
+              <span class="query-num">Query 3 &bull; Logistics</span>
+              <span class="query-badge badge-active">Update Active</span>
+            </div>
+            <div class="query-name">Outward Gate Entry (Dispatches)</div>
+            <div class="query-desc">
+              Finished goods customer dispatches, excise invoice numbers, vehicle details, and gate clearance flags.
+            </div>
+            <div class="table-target">
+              Table: <strong>gate_outward_entries</strong>
+            </div>
+          </div>
+          <div class="query-actions">
+            <button class="btn-update" id="btnUpdateOutward" onclick="updateQueryData('outward_gate', this)">
+              <span>🔄 Update PostgreSQL</span>
+            </button>
+            <button class="btn-view" onclick="loadQueryIntoEditor('outward_gate')">
+              👁️ Load in Editor
+            </button>
+          </div>
+        </div>
+
+        <!-- Query 4: BOM Hierarchy Explosion (Active Update) -->
+        <div class="query-item-card active-card">
+          <div>
+            <div class="query-item-header">
+              <span class="query-num">Query 4 &bull; Manufacturing</span>
+              <span class="query-badge badge-active">Update Active</span>
+            </div>
+            <div class="query-name">BOM Hierarchy Explosion</div>
+            <div class="query-desc">
+              Multi-level BOM tree traversal computing child quantities, paths, and live inventory (RM, MFG, On-hand).
+            </div>
+            <div class="table-target">
+              Table: <strong>bill_of_materials</strong>
+            </div>
+          </div>
+          <div class="query-actions">
+            <button class="btn-update" id="btnUpdateBom" onclick="updateQueryData('bom', this)">
+              <span>🔄 Update PostgreSQL</span>
+            </button>
+            <button class="btn-view" onclick="loadQueryIntoEditor('bom')">
+              👁️ Load in Editor
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sync Status Alert Notification -->
+      <div class="sync-alert" id="syncAlert"></div>
+    </div>
+
+    <!-- SECTION 2: Existing Interactive SQL Playground (UNCHANGED) -->
     <div class="card">
       <div class="card-top">
-        <span class="card-title">Query Input</span>
+        <span class="card-title">Interactive Query Playground</span>
         <div class="sample-buttons">
-          <button class="btn-sm btn-sm-primary" onclick="loadSample('bom')">✨ Load BOM Explosion Query</button>
-          <button class="btn-sm" onclick="loadSample('dual')">⚡ Test Connection (Dual)</button>
-          <button class="btn-sm" onclick="loadSample('tables')">📋 List Tables</button>
+          <button class="btn-sm" onclick="setQuery('SELECT SYSDATE, BANNER FROM v$version')">⚡ Test Dual</button>
+          <button class="btn-sm"
+            onclick="setQuery('SELECT table_name, num_rows FROM user_tables WHERE ROWNUM <= 25 ORDER BY table_name')">📋
+            List Tables</button>
           <button class="btn-sm" onclick="clearInput()">Clear</button>
         </div>
       </div>
 
       <div class="textarea-wrapper">
-        <textarea id="sqlInput" spellcheck="false" placeholder="Enter or paste any query here (short or long)...">SELECT SYSDATE, BANNER FROM v$version</textarea>
+        <textarea id="sqlInput" spellcheck="false"
+          placeholder="Enter or paste any query here (short or long)...">SELECT SYSDATE, BANNER FROM v$version</textarea>
       </div>
 
       <div class="actions-bar">
-        <button class="btn-execute" id="btnExecute" onclick="runQuery()">
-          <span>▶ Execute Query</span>
-        </button>
+        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+          <button class="btn-execute" id="btnExecute" onclick="runQuery()">
+            <span>▶ Execute Query</span>
+          </button>
+          <div id="postExecuteActions" style="display: none; align-items: center; gap: 12px; flex-wrap: wrap;">
+            <button class="btn-update-playground" id="btnUpdatePlayground" onclick="updatePlaygroundData()">
+              <span>🔄 Update PostgreSQL</span>
+            </button>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <label for="targetTableSelect" style="font-size: 0.8rem; color: #94a3b8; font-weight: 500;">Target Table:</label>
+              <select id="targetTableSelect" class="table-dropdown">
+                <option value="pending_purchase_orders">pending_purchase_orders</option>
+                <option value="gate_inward_entries">gate_inward_entries</option>
+                <option value="gate_outward_entries">gate_outward_entries</option>
+                <option value="bill_of_materials">bill_of_materials</option>
+              </select>
+            </div>
+          </div>
+        </div>
         <span class="shortcut-hint">Press <strong>Ctrl + Enter</strong> to execute</span>
       </div>
     </div>
@@ -362,7 +820,6 @@
     <div class="analysis-panel" id="analysisBar" style="display: none;">
       <div class="stats-group">
         <div class="stat-item">Rows: <strong id="statRows">0</strong></div>
-        <div class="stat-item">Columns: <strong id="statCols">0</strong></div>
         <div class="stat-item">Execution Time: <strong id="statTime">0 ms</strong></div>
         <div class="stat-item">Type: <strong id="statType">SELECT</strong></div>
       </div>
@@ -375,8 +832,12 @@
     <!-- Results Display -->
     <div class="card results-card">
       <div class="results-toolbar">
-        <span class="card-title">Database Output</span>
-        <input type="text" class="search-input" id="tableSearch" placeholder="🔍 Search in results..." oninput="filterResults()" style="display: none;" />
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span class="card-title">Database Output</span>
+          <span id="rowCountBadge" style="font-size: 0.82rem; color: #38bdf8; font-weight: 600; display: none;"></span>
+        </div>
+        <input type="text" class="search-input" id="tableSearch" placeholder="🔍 Search in results..."
+          oninput="filterResults()" style="display: none;" />
       </div>
       <div class="table-container" id="tableContainer">
         <div class="empty-state">Type or paste any query in the input box above and click "Execute Query".</div>
@@ -387,6 +848,272 @@
   <script>
     let currentRows = [];
     let currentColumns = [];
+    let queriesCache = {};
+
+    // Load available queries catalog on page load
+    async function initQueries() {
+      try {
+        const res = await fetch('/api/queries');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.queries) {
+            data.queries.forEach(q => { queriesCache[q.id] = q; });
+          }
+        }
+      } catch (e) {
+        console.warn('Could not cache queries catalog:', e);
+      }
+    }
+    initQueries();
+
+    /**
+     * UPDATE BUTTON HANDLER (For Query 1 - Pending Purchase Orders)
+     * 1. Fetches latest output from Oracle
+     * 2. Connects to PostgreSQL (Neon DB)
+     * 3. Clears existing records
+     * 4. Inserts new rows within a safe transaction
+     */
+    async function updateQueryData(queryId, btnEl) {
+      const btn = btnEl || event?.target?.closest('button') || document.getElementById('btnUpdatePO');
+      const alertBox = document.getElementById('syncAlert');
+      const queryTitle = queriesCache[queryId]?.title || (queryId === 'pending_po' ? 'Pending Purchase Orders' : 'Enterprise Query');
+
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span>⏳ Updating...</span>';
+      }
+
+      alertBox.className = 'sync-alert sync-alert-loading';
+      alertBox.style.display = 'block';
+      alertBox.innerHTML = `⏳ <strong>Executing ${queryTitle} on Oracle & Syncing with Neon PostgreSQL...</strong> Please wait.`;
+
+      try {
+        const response = await fetch(`/api/sync/${queryId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || 'Database update failed.');
+        }
+
+        // Success Alert
+        alertBox.className = 'sync-alert sync-alert-success';
+        alertBox.innerHTML = `
+          <strong>✅ Database Update Complete!</strong><br />
+          ${result.message}<br />
+          <small style="opacity: 0.85;">
+            Oracle Query Time: ${result.oracleDurationMs} ms &bull; PostgreSQL Insert Time: ${result.postgresDurationMs} ms &bull; Total Time: ${result.totalDurationMs} ms
+          </small>
+        `;
+
+        // Automatically load full synced records into the table below so user sees all data!
+        const rows = result.data || result.rows || result.dataPreview || [];
+        if (rows.length > 0) {
+          currentRows = rows;
+          currentColumns = Object.keys(currentRows[0]);
+          document.getElementById('analysisBar').style.display = 'flex';
+          document.getElementById('statRows').innerText = (result.rowCount || currentRows.length).toLocaleString();
+          document.getElementById('statTime').innerText = `${result.totalDurationMs} ms`;
+          document.getElementById('statType').innerText = 'SYNCED';
+
+          const tableSearch = document.getElementById('tableSearch');
+          tableSearch.style.display = 'block';
+          tableSearch.value = '';
+
+          renderTable(currentRows);
+        }
+      } catch (err) {
+        alertBox.className = 'sync-alert sync-alert-error';
+        alertBox.innerHTML = `
+          <strong>❌ Database Update Failed</strong><br />
+          ${err.message}<br />
+          <small style="opacity: 0.85;">
+            Ensure DATABASE_URL is properly configured in your .env file and target table exists.
+          </small>
+        `;
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<span>🔄 Update PostgreSQL</span>';
+        }
+      }
+    }
+
+    let lastExecutedSql = '';
+
+    /**
+     * Auto-detect target PostgreSQL table from SQL keywords
+     */
+    function autoDetectTableFromSql(sql) {
+      if (!sql) return;
+      const s = sql.toUpperCase();
+      const tableSelect = document.getElementById('targetTableSelect');
+      if (!tableSelect) return;
+
+      if (s.includes('XXHHL_GATE_ENTRY_IN') || s.includes('GATE_ENTRY_IN')) {
+        tableSelect.value = 'gate_inward_entries';
+      } else if (s.includes('XXHHL_GATE_ENTRY_OUT') || s.includes('GATE_ENTRY_OUT')) {
+        tableSelect.value = 'gate_outward_entries';
+      } else if (s.includes('BOM_BILL_OF_MATERIALS') || s.includes('XXHHL_STR2TBL') || s.includes('PATH_AND_QTY')) {
+        tableSelect.value = 'bill_of_materials';
+      } else if (s.includes('PO_HEADERS_ALL') || s.includes('REMANING_QTY') || s.includes('PO_DISTRIBUTIONS_ALL')) {
+        tableSelect.value = 'pending_purchase_orders';
+      }
+    }
+
+    /**
+     * Load any of the 4 queries into the interactive playground editor
+     */
+    async function loadQueryIntoEditor(queryId) {
+      const sqlInput = document.getElementById('sqlInput');
+      const tableSelect = document.getElementById('targetTableSelect');
+      const tableMap = {
+        pending_po: 'pending_purchase_orders',
+        inward_gate: 'gate_inward_entries',
+        outward_gate: 'gate_outward_entries',
+        bom: 'bill_of_materials',
+      };
+      if (tableSelect && tableMap[queryId]) {
+        tableSelect.value = tableMap[queryId];
+      }
+
+      if (queriesCache[queryId] && queriesCache[queryId].sql) {
+        sqlInput.value = queriesCache[queryId].sql;
+      } else {
+        // Fallback fetch
+        try {
+          let fallbackFile = queryId + '.sql';
+          if (queryId === 'pending_po') fallbackFile = 'pending_po_test.sql';
+          if (queryId === 'inward_gate') fallbackFile = 'gate_inward_test.sql';
+          if (queryId === 'outward_gate') fallbackFile = 'gate_outward_test.sql';
+          if (queryId === 'bom') fallbackFile = 'bom_test.sql';
+          const res = await fetch(`/queries/${fallbackFile}`);
+          if (res.ok) {
+            sqlInput.value = (await res.text()).trim();
+          }
+        } catch (e) {
+          alert('Could not load query SQL.');
+        }
+      }
+      sqlInput.focus();
+      // Hide update button until query is executed
+      const postActions = document.getElementById('postExecuteActions');
+      if (postActions) postActions.style.display = 'none';
+      // Smooth scroll to editor
+      document.querySelector('.card:nth-of-type(2)').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Auto-detect table when user pastes or types a new query
+    document.getElementById('sqlInput').addEventListener('input', () => {
+      autoDetectTableFromSql(document.getElementById('sqlInput').value);
+      // Hide update button when query text is modified until user executes it again
+      const postActions = document.getElementById('postExecuteActions');
+      if (postActions) postActions.style.display = 'none';
+    });
+
+    /**
+     * UPDATE POSTGRESQL (From Interactive Playground):
+     * Uploads the currently displayed query results or executes the modified query live
+     * and syncs the exact new records into PostgreSQL table within an atomic transaction.
+     */
+    async function updatePlaygroundData() {
+      const btn = document.getElementById('btnUpdatePlayground');
+      const alertBox = document.getElementById('syncAlert');
+      const tableSelect = document.getElementById('targetTableSelect');
+      const targetTable = tableSelect ? tableSelect.value : 'pending_purchase_orders';
+      const sql = document.getElementById('sqlInput').value.trim();
+
+      if (!sql) {
+        alert('Please enter or execute a query first.');
+        return;
+      }
+
+      // Check if user already executed the query and rows are currently displayed
+      const isSqlModified = (lastExecutedSql && lastExecutedSql !== sql);
+      const hasDisplayedRows = (currentRows && currentRows.length > 0 && !isSqlModified);
+
+      btn.disabled = true;
+      btn.innerHTML = '<span>⏳ Updating PostgreSQL...</span>';
+      alertBox.className = 'sync-alert sync-alert-loading';
+      alertBox.style.display = 'block';
+
+      if (hasDisplayedRows) {
+        alertBox.innerHTML = `⏳ <strong>Uploading currently displayed ${currentRows.length.toLocaleString()} record(s) to '${targetTable}' in PostgreSQL...</strong> Please wait.`;
+      } else {
+        alertBox.innerHTML = `⏳ <strong>Executing modified query on Oracle & updating '${targetTable}' in PostgreSQL...</strong> Please wait.`;
+      }
+
+      try {
+        let payload;
+        if (hasDisplayedRows) {
+          // Send the currently displayed query results directly
+          payload = {
+            tableName: targetTable,
+            rows: currentRows,
+          };
+        } else {
+          // User changed query without executing first -> execute live on Oracle and sync
+          payload = {
+            tableName: targetTable,
+            query: sql,
+          };
+        }
+
+        const response = await fetch('/api/sync/custom', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || 'Database update failed.');
+        }
+
+        // Success Alert
+        alertBox.className = 'sync-alert sync-alert-success';
+        alertBox.innerHTML = `
+          <strong>✅ Database Update Complete!</strong><br />
+          ${result.message}<br />
+          <small style="opacity: 0.85;">
+            Target Table: <code>${result.tableName}</code> &bull; Total Time: ${result.totalDurationMs} ms
+          </small>
+        `;
+
+        // Load the updated records into the table
+        if (result.data && result.data.length > 0) {
+          currentRows = result.data;
+          lastExecutedSql = sql;
+          currentColumns = Object.keys(currentRows[0]);
+          document.getElementById('analysisBar').style.display = 'flex';
+          document.getElementById('statRows').innerText = (result.rowCount || currentRows.length).toLocaleString();
+          document.getElementById('statTime').innerText = `${result.totalDurationMs} ms`;
+          document.getElementById('statType').innerText = 'SYNCED';
+
+          const tableSearch = document.getElementById('tableSearch');
+          tableSearch.style.display = 'block';
+          tableSearch.value = '';
+
+          renderTable(currentRows);
+        }
+      } catch (err) {
+        alertBox.className = 'sync-alert sync-alert-error';
+        alertBox.innerHTML = `
+          <strong>❌ Database Update Failed</strong><br />
+          ${err.message}<br />
+          <small style="opacity: 0.85;">
+            Ensure target table '${targetTable}' exists in your PostgreSQL database and matches the query columns.
+          </small>
+        `;
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span>🔄 Update PostgreSQL</span>';
+      }
+    }
 
     // Keyboard shortcut: Ctrl + Enter
     document.getElementById('sqlInput').addEventListener('keydown', (e) => {
@@ -396,28 +1123,21 @@
       }
     });
 
-    async function loadSample(type) {
-      if (type === 'bom') {
-        try {
-          const res = await fetch('/queries/bom_test.sql');
-          if (res.ok) {
-            document.getElementById('sqlInput').value = (await res.text()).trim();
-          }
-        } catch (e) {
-          alert('Could not load sample BOM query.');
-        }
-      } else if (type === 'dual') {
-        document.getElementById('sqlInput').value = 'SELECT SYSDATE, BANNER FROM v$version';
-      } else if (type === 'tables') {
-        document.getElementById('sqlInput').value = 'SELECT table_name, num_rows FROM user_tables WHERE ROWNUM <= 25 ORDER BY table_name';
-      }
+    function setQuery(sql) {
+      document.getElementById('sqlInput').value = sql;
+      runQuery();
     }
 
     function clearInput() {
       document.getElementById('sqlInput').value = '';
+      const postActions = document.getElementById('postExecuteActions');
+      if (postActions) postActions.style.display = 'none';
       document.getElementById('sqlInput').focus();
     }
 
+    /**
+     * Existing Query Execution (UNCHANGED)
+     */
     async function runQuery() {
       const sql = document.getElementById('sqlInput').value.trim();
       const btn = document.getElementById('btnExecute');
@@ -439,7 +1159,7 @@
         const response = await fetch('/query', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ query: sql, maxRows: 2000 }),
+          body: JSON.stringify({ query: sql, maxRows: 50000 }),
         });
 
         const result = await response.json();
@@ -449,15 +1169,19 @@
         }
 
         currentRows = result.data || [];
+        lastExecutedSql = sql;
         const analysis = result.analysis || {};
         currentColumns = analysis.columns || (currentRows[0] ? Object.keys(currentRows[0]) : []);
 
         // Update Analysis Bar
-        document.getElementById('statRows').innerText = currentRows.length;
-        document.getElementById('statCols').innerText = currentColumns.length;
+        document.getElementById('statRows').innerText = currentRows.length.toLocaleString();
         document.getElementById('statTime').innerText = `${analysis.executionTimeMs || 0} ms`;
         document.getElementById('statType').innerText = analysis.queryType || 'SELECT';
         analysisBar.style.display = 'flex';
+
+        // Show Update PostgreSQL button and target table selector now that we have executed results
+        const postActions = document.getElementById('postExecuteActions');
+        if (postActions) postActions.style.display = 'inline-flex';
 
         if (currentRows.length === 0) {
           tableContainer.innerHTML = '<div class="empty-state">✅ Query executed successfully. 0 rows returned.</div>';
@@ -470,6 +1194,8 @@
       } catch (err) {
         analysisBar.style.display = 'none';
         tableSearch.style.display = 'none';
+        const postActions = document.getElementById('postExecuteActions');
+        if (postActions) postActions.style.display = 'none';
         errorBox.style.display = 'block';
         document.getElementById('errorMsg').innerText = err.message || 'Execution error';
 
@@ -489,32 +1215,42 @@
     }
 
     function renderTable(rows) {
+      const container = document.getElementById('tableContainer');
+      const badge = document.getElementById('rowCountBadge');
+
       if (!rows || rows.length === 0) {
-        document.getElementById('tableContainer').innerHTML = '<div class="empty-state">No matching rows.</div>';
+        container.innerHTML = '<div class="empty-state">No matching rows.</div>';
+        if (badge) badge.innerText = '(0 rows)';
         return;
       }
 
+      if (badge) {
+        badge.style.display = 'inline';
+        badge.innerText = `(${rows.length.toLocaleString()} rows)`;
+      }
+
       const cols = currentColumns.length ? currentColumns : Object.keys(rows[0]);
-      let html = '<table><thead><tr>';
-      cols.forEach(col => { html += `<th>${col}</th>`; });
-      html += '</tr></thead><tbody>';
+      const html = ['<table><thead><tr>'];
+      cols.forEach(col => { html.push(`<th>${escapeHtml(col)}</th>`); });
+      html.push('</tr></thead><tbody>');
 
       rows.forEach(row => {
-        html += '<tr>';
+        html.push('<tr>');
         cols.forEach(col => {
           const raw = row[col];
           const val = raw === null || raw === undefined ? '<span class="null-val">NULL</span>' : escapeHtml(String(raw));
-          html += `<td title="${escapeHtml(String(raw ?? ''))}">${val}</td>`;
+          html.push(`<td title="${escapeHtml(String(raw ?? ''))}">${val}</td>`);
         });
-        html += '</tr>';
+        html.push('</tr>');
       });
 
-      html += '</tbody></table>';
-      document.getElementById('tableContainer').innerHTML = html;
+      html.push('</tbody></table>');
+      container.innerHTML = html.join('');
     }
 
     function filterResults() {
-      const q = document.getElementById('tableSearch').value.toLowerCase();
+      const q = document.getElementById('tableSearch').value.toLowerCase().trim();
+      const badge = document.getElementById('rowCountBadge');
       if (!q) {
         renderTable(currentRows);
         return;
@@ -523,6 +1259,9 @@
         return Object.values(row).some(v => String(v).toLowerCase().includes(q));
       });
       renderTable(filtered);
+      if (badge) {
+        badge.innerText = `(${filtered.length.toLocaleString()} of ${currentRows.length.toLocaleString()} rows)`;
+      }
     }
 
     function escapeHtml(str) {
@@ -557,4 +1296,5 @@
     }
   </script>
 </body>
+
 </html>

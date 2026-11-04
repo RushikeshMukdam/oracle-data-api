@@ -185,5 +185,5 @@ FROM (
           AND msi.segment1 = '22305174'
     )
 ) x
-ORDER BY x.path_and_qty;
+ORDER BY x.path_and_qty
 

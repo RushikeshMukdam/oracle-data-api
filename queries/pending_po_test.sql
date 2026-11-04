@@ -1,24 +1,11 @@
-/**
- * Query 4: Pending Purchase Orders (Standard POs & Blanket Releases)
- *
- * Fetches approved purchase orders and blanket releases with remaining
- * balance quantities > 0, unit prices, PO quantities, and item descriptions.
- */
-
-const QUERY_NAME = 'PENDING_PURCHASE_ORDERS';
-
-const SQL = `
 SELECT
-    xx.po_num,
-    xx.rel_num,
-    xx.segment1,
-    xx.unit_price,
-    xx.po_qty,
-    xx.remaning_qty,
-    xx.quantity_received,
-    xx.item_description,
-    xx.supplier,
-    TO_CHAR(xx.po_date, 'YYYY-MM-DD') AS po_date
+    po_num,
+    rel_num,
+    segment1,
+    unit_price,
+    po_qty,
+    remaning_qty,
+    item_description
 FROM (
     SELECT
         pds.line_location_id,
@@ -148,7 +135,7 @@ FROM (
     WHERE ph.po_header_id = pol.po_header_id
       AND ph.po_header_id = pds.po_header_id
       AND pol.po_line_id = pds.po_line_id
-      AND msi.organization_id = :orgId
+      AND msi.organization_id = 82
       AND pd.po_header_id = pds.po_header_id
       AND pd.po_line_id = pds.po_line_id
       AND pd.line_location_id = pds.line_location_id
@@ -174,7 +161,7 @@ FROM (
       AND NVL(pol.cancel_flag, 'N') <> 'Y'
       AND pds.receipt_required_flag = 'Y'
       AND msi.inventory_item_flag = 'Y'
-      AND pds.org_id = :operatingUnitId
+      AND pds.org_id = 81
       AND (pds.quantity
            - NVL(pds.quantity_received, 0)
            - NVL(pds.quantity_cancelled, 0)
@@ -314,7 +301,7 @@ FROM (
       AND pol.po_line_id = pds.po_line_id
       AND ph.vendor_id = pv.vendor_id
       AND pds.po_release_id = pra.po_release_id
-      AND msi.organization_id = :orgId
+      AND msi.organization_id = 82
       AND ph.vendor_site_id = pvs.vendor_site_id
       AND pol.item_id = msi.inventory_item_id
       AND (igst.tax_name IS NOT NULL
@@ -339,7 +326,7 @@ FROM (
       AND pol.closed_date IS NULL
       AND pds.receipt_required_flag = 'Y'
       AND msi.inventory_item_flag = 'Y'
-      AND pds.org_id = :operatingUnitId
+      AND pds.org_id = 81
       AND (pds.quantity
            - NVL(pds.quantity_received, 0)
            - NVL(pds.quantity_cancelled, 0)
@@ -350,24 +337,4 @@ FROM (
       AND pds.closed_code IN ('OPEN', 'CLOSED FOR INVOICE')
       AND NVL(pol.cancel_flag, 'N') <> 'Y'
 ) xx
-WHERE (:itemNumber IS NULL OR xx.segment1 = :itemNumber)
-  AND (:poNum IS NULL OR xx.po_num = :poNum)
-  AND (:supplier IS NULL OR UPPER(xx.supplier) LIKE '%' || UPPER(:supplier) || '%')
-ORDER BY xx.segment1, xx.unit_price, xx.po_qty, xx.remaning_qty, xx.item_description
-FETCH FIRST :limit ROWS ONLY
-`;
-
-module.exports = {
-  name: QUERY_NAME,
-  description: 'Approved pending purchase orders and blanket releases with balance quantity > 0',
-  sql: SQL,
-  defaultBinds: {
-    orgId: 82,
-    operatingUnitId: 81,
-    itemNumber: null,
-    poNum: null,
-    supplier: null,
-    limit: 100,
-  },
-};
-
+ORDER BY 3, 4, 5, 6, 7
