@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Saksham AI - Database Query System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #090d16;
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background: #111827;
+      border-bottom: 1px solid #1f2937;
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo-badge {
+      background: linear-gradient(135deg, #2563eb, #38bdf8);
+      color: white;
+      font-weight: 800;
+      font-size: 0.9rem;
+      padding: 6px 12px;
+      border-radius: 8px;
+      letter-spacing: 0.05em;
+    }
+    header h1 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #f3f4f6;
+    }
+    header h1 span {
+      color: #9ca3af;
+      font-weight: 400;
+      font-size: 0.95rem;
+    }
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      color: #34d399;
+      padding: 5px 14px;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #10b981;
+    }
+    main {
+      flex: 1;
+      padding: 24px;
+      max-width: 1500px;
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .card {
+      background: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    }
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .card-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #9ca3af;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .sample-buttons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .btn-sm {
+      background: #1f2937;
+      border: 1px solid #374151;
+      color: #cbd5e1;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .btn-sm:hover {
+      background: #374151;
+      color: #fff;
+      border-color: #4b5563;
+    }
+    .btn-sm-primary {
+      background: #1e3a8a;
+      border-color: #2563eb;
+      color: #93c5fd;
+    }
+    .btn-sm-primary:hover {
+      background: #2563eb;
+      color: #fff;
+    }
+    .textarea-wrapper {
+      position: relative;
+    }
+    textarea {
+      width: 100%;
+      min-height: 160px;
+      max-height: 480px;
+      background: #090d16;
+      border: 1px solid #374151;
+      border-radius: 8px;
+      color: #f3f4f6;
+      font-family: 'JetBrains Mono', Consolas, monospace;
+      font-size: 0.92rem;
+      line-height: 1.5;
+      padding: 16px;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    textarea:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+    }
+    .actions-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 14px;
+    }
+    .btn-execute {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: #fff;
+      border: none;
+      padding: 10px 28px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s;
+      box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
+    }
+    .btn-execute:hover {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      transform: translateY(-1px);
+    }
+    .btn-execute:disabled {
+      background: #374151;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    .shortcut-hint {
+      color: #94a3b8;
+      font-size: 0.8rem;
+    }
+    .analysis-panel {
+      display: none;
+      background: #172033;
+      border: 1px solid #2563eb;
+      border-radius: 8px;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .stats-group {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .stat-item {
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+    .stat-item strong {
+      color: #38bdf8;
+      font-weight: 600;
+      margin-left: 4px;
+    }
+    .error-card {
+      display: none;
+      background: #3b0707;
+      border: 1px solid #b91c1c;
+      border-radius: 8px;
+      padding: 16px;
+      color: #fca5a5;
+    }
+    .error-card h4 {
+      font-size: 0.95rem;
+      margin-bottom: 6px;
+      color: #ef4444;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .error-card .msg {
+      font-family: monospace;
+      font-size: 0.875rem;
+      margin-bottom: 8px;
+      white-space: pre-wrap;
+    }
+    .error-card .hint {
+      font-size: 0.825rem;
+      color: #fecaca;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 8px 12px;
+      border-radius: 4px;
+    }
+    .results-card {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 380px;
+    }
+    .results-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .search-input {
+      background: #090d16;
+      border: 1px solid #374151;
+      color: #e2e8f0;
+      padding: 7px 14px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      width: 260px;
+      outline: none;
+    }
+    .search-input:focus {
+      border-color: #38bdf8;
+    }
+    .table-container {
+      overflow: auto;
+      max-height: 580px;
+      border: 1px solid #1f2937;
+      border-radius: 8px;
+      background: #090d16;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      text-align: left;
+    }
+    thead {
+      background: #111827;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+    th {
+      padding: 10px 14px;
+      font-weight: 600;
+      color: #9ca3af;
+      border-bottom: 2px solid #1f2937;
+      white-space: nowrap;
+    }
+    td {
+      padding: 9px 14px;
+      border-bottom: 1px solid #1a2234;
+      color: #cbd5e1;
+      white-space: nowrap;
+      max-width: 420px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    tr:nth-child(even) { background: rgba(255, 255, 255, 0.015); }
+    tr:hover { background: rgba(56, 189, 248, 0.06); }
+    .null-val { color: #475569; font-style: italic; }
+    .empty-state {
+      padding: 60px 20px;
+      text-align: center;
+      color: #64748b;
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo-container">
+      <div class="logo-badge">SAKSHAM AI</div>
+      <h1>Database Query System <span>&bull; Bajaj Indef</span></h1>
+    </div>
+    <div class="status-pill">
+      <div class="status-dot"></div>
+      <span>Oracle 19c Connected</span>
+    </div>
+  </header>
+
+  <main>
+    <!-- Query Input Section -->
+    <div class="card">
+      <div class="card-top">
+        <span class="card-title">Query Input</span>
+        <div class="sample-buttons">
+          <button class="btn-sm btn-sm-primary" onclick="loadSample('bom')">✨ Load BOM Explosion Query</button>
+          <button class="btn-sm" onclick="loadSample('dual')">⚡ Test Connection (Dual)</button>
+          <button class="btn-sm" onclick="loadSample('tables')">📋 List Tables</button>
+          <button class="btn-sm" onclick="clearInput()">Clear</button>
+        </div>
+      </div>
+
+      <div class="textarea-wrapper">
+        <textarea id="sqlInput" spellcheck="false" placeholder="Enter or paste any query here (short or long)...">SELECT SYSDATE, BANNER FROM v$version</textarea>
+      </div>
+
+      <div class="actions-bar">
+        <button class="btn-execute" id="btnExecute" onclick="runQuery()">
+          <span>▶ Execute Query</span>
+        </button>
+        <span class="shortcut-hint">Press <strong>Ctrl + Enter</strong> to execute</span>
+      </div>
+    </div>
+
+    <!-- Error Alert Box -->
+    <div class="error-card" id="errorBox">
+      <h4>⚠️ Query Execution Error</h4>
+      <div class="msg" id="errorMsg"></div>
+      <div class="hint" id="errorHint" style="display: none;"></div>
+    </div>
+
+    <!-- Analysis & Status Bar -->
+    <div class="analysis-panel" id="analysisBar" style="display: none;">
+      <div class="stats-group">
+        <div class="stat-item">Rows: <strong id="statRows">0</strong></div>
+        <div class="stat-item">Columns: <strong id="statCols">0</strong></div>
+        <div class="stat-item">Execution Time: <strong id="statTime">0 ms</strong></div>
+        <div class="stat-item">Type: <strong id="statType">SELECT</strong></div>
+      </div>
+      <div>
+        <button class="btn-sm" onclick="exportCsv()">📥 Download CSV</button>
+        <button class="btn-sm" onclick="copyJson()">📋 Copy JSON</button>
+      </div>
+    </div>
+
+    <!-- Results Display -->
+    <div class="card results-card">
+      <div class="results-toolbar">
+        <span class="card-title">Database Output</span>
+        <input type="text" class="search-input" id="tableSearch" placeholder="🔍 Search in results..." oninput="filterResults()" style="display: none;" />
+      </div>
+      <div class="table-container" id="tableContainer">
+        <div class="empty-state">Type or paste any query in the input box above and click "Execute Query".</div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let currentRows = [];
+    let currentColumns = [];
+
+    // Keyboard shortcut: Ctrl + Enter
+    document.getElementById('sqlInput').addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        runQuery();
+      }
+    });
+
+    async function loadSample(type) {
+      if (type === 'bom') {
+        try {
+          const res = await fetch('/queries/bom_test.sql');
+          if (res.ok) {
+            document.getElementById('sqlInput').value = (await res.text()).trim();
+          }
+        } catch (e) {
+          alert('Could not load sample BOM query.');
+        }
+      } else if (type === 'dual') {
+        document.getElementById('sqlInput').value = 'SELECT SYSDATE, BANNER FROM v$version';
+      } else if (type === 'tables') {
+        document.getElementById('sqlInput').value = 'SELECT table_name, num_rows FROM user_tables WHERE ROWNUM <= 25 ORDER BY table_name';
+      }
+    }
+
+    function clearInput() {
+      document.getElementById('sqlInput').value = '';
+      document.getElementById('sqlInput').focus();
+    }
+
+    async function runQuery() {
+      const sql = document.getElementById('sqlInput').value.trim();
+      const btn = document.getElementById('btnExecute');
+      const errorBox = document.getElementById('errorBox');
+      const analysisBar = document.getElementById('analysisBar');
+      const tableContainer = document.getElementById('tableContainer');
+      const tableSearch = document.getElementById('tableSearch');
+
+      if (!sql) {
+        alert('Please enter a query in the input box.');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span>⏳ Executing & Analyzing...</span>';
+      errorBox.style.display = 'none';
+
+      try {
+        const response = await fetch('/query', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: sql, maxRows: 2000 }),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+          throw result;
+        }
+
+        currentRows = result.data || [];
+        const analysis = result.analysis || {};
+        currentColumns = analysis.columns || (currentRows[0] ? Object.keys(currentRows[0]) : []);
+
+        // Update Analysis Bar
+        document.getElementById('statRows').innerText = currentRows.length;
+        document.getElementById('statCols').innerText = currentColumns.length;
+        document.getElementById('statTime').innerText = `${analysis.executionTimeMs || 0} ms`;
+        document.getElementById('statType').innerText = analysis.queryType || 'SELECT';
+        analysisBar.style.display = 'flex';
+
+        if (currentRows.length === 0) {
+          tableContainer.innerHTML = '<div class="empty-state">✅ Query executed successfully. 0 rows returned.</div>';
+          tableSearch.style.display = 'none';
+        } else {
+          tableSearch.style.display = 'block';
+          tableSearch.value = '';
+          renderTable(currentRows);
+        }
+      } catch (err) {
+        analysisBar.style.display = 'none';
+        tableSearch.style.display = 'none';
+        errorBox.style.display = 'block';
+        document.getElementById('errorMsg').innerText = err.message || 'Execution error';
+
+        const hintEl = document.getElementById('errorHint');
+        if (err.hint) {
+          hintEl.style.display = 'block';
+          hintEl.innerText = `💡 Tip: ${err.hint}`;
+        } else {
+          hintEl.style.display = 'none';
+        }
+
+        tableContainer.innerHTML = '<div class="empty-state" style="color: #ef4444;">Query execution failed. See error details above.</div>';
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span>▶ Execute Query</span>';
+      }
+    }
+
+    function renderTable(rows) {
+      if (!rows || rows.length === 0) {
+        document.getElementById('tableContainer').innerHTML = '<div class="empty-state">No matching rows.</div>';
+        return;
+      }
+
+      const cols = currentColumns.length ? currentColumns : Object.keys(rows[0]);
+      let html = '<table><thead><tr>';
+      cols.forEach(col => { html += `<th>${col}</th>`; });
+      html += '</tr></thead><tbody>';
+
+      rows.forEach(row => {
+        html += '<tr>';
+        cols.forEach(col => {
+          const raw = row[col];
+          const val = raw === null || raw === undefined ? '<span class="null-val">NULL</span>' : escapeHtml(String(raw));
+          html += `<td title="${escapeHtml(String(raw ?? ''))}">${val}</td>`;
+        });
+        html += '</tr>';
+      });
+
+      html += '</tbody></table>';
+      document.getElementById('tableContainer').innerHTML = html;
+    }
+
+    function filterResults() {
+      const q = document.getElementById('tableSearch').value.toLowerCase();
+      if (!q) {
+        renderTable(currentRows);
+        return;
+      }
+      const filtered = currentRows.filter(row => {
+        return Object.values(row).some(v => String(v).toLowerCase().includes(q));
+      });
+      renderTable(filtered);
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function exportCsv() {
+      if (!currentRows.length) return;
+      const cols = currentColumns.length ? currentColumns : Object.keys(currentRows[0]);
+      const csv = [cols.join(',')];
+
+      currentRows.forEach(row => {
+        const line = cols.map(c => {
+          const v = row[c] === null || row[c] === undefined ? '' : String(row[c]).replace(/"/g, '""');
+          return `"${v}"`;
+        });
+        csv.push(line.join(','));
+      });
+
+      const blob = new Blob([csv.join('\n')], { type: 'text/csv' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `query_result_${Date.now()}.csv`;
+      a.click();
+    }
+
+    function copyJson() {
+      if (!currentRows.length) return;
+      navigator.clipboard.writeText(JSON.stringify(currentRows, null, 2))
+        .then(() => alert('Copied JSON to clipboard!'))
+        .catch(() => alert('Failed to copy.'));
+    }
+  </script>
+</body>
+</html>

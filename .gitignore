@@ -5,6 +5,10 @@ node_modules/
 .env
 .env.local
 
+# Data outputs
+bom_output.json
+*.csv
+
 # Logs
 *.log
 npm-debug.log*

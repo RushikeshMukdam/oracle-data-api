@@ -1,5 +1,39 @@
 require('dotenv').config();
+const fs = require('fs');
+const path = require('path');
 const oracledb = require('oracledb');
+
+// Enable Thick Mode (required for Oracle Native Network Encryption / Data Integrity / ANO)
+function initOracleClientMode() {
+  try {
+    let libDir = process.env.ORACLE_CLIENT_LIB_DIR;
+    if (!libDir && process.platform === 'win32') {
+      const defaultPaths = [
+        'C:\\oracle\\instantclient_19_30',
+        'C:\\oracle',
+        'C:\\instantclient_19_30',
+      ];
+      for (const p of defaultPaths) {
+        if (fs.existsSync(p) && fs.existsSync(path.join(p, 'oci.dll'))) {
+          libDir = p;
+          break;
+        }
+      }
+    }
+
+    if (libDir) {
+      oracledb.initOracleClient({ libDir });
+    } else if (process.env.ENABLE_THICK_MODE === 'true') {
+      oracledb.initOracleClient();
+    }
+  } catch (err) {
+    if (!err.message.includes('already been called')) {
+      console.warn(`⚠️  Oracle Client initialization: ${err.message}`);
+    }
+  }
+}
+
+initOracleClientMode();
 
 /**
  * Diagnostic utility to test direct Oracle Database connectivity
@@ -23,7 +57,7 @@ async function testConnection() {
     process.exit(1);
   }
 
-  console.log('\n2. Attempting to connect to Oracle Database in Thin Mode...');
+  console.log(`\n2. Attempting to connect to Oracle Database (${oracledb.thin ? 'Thin Mode' : 'Thick Mode - OCI: ' + (process.env.ORACLE_CLIENT_LIB_DIR || 'C:\\oracle\\instantclient_19_30')})...`);
   let connection;
 
   try {
