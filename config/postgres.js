@@ -92,19 +92,22 @@ async function testPostgresConnection() {
 }
 
 /**
- * Safely clears existing records and inserts new rows within a single transaction.
+ * Safely inserts new rows into PostgreSQL table within a single transaction.
+ * Preserves existing records by default (appends new data without deleting previous records).
  *
  * Rules strictly followed:
  * - Does NOT drop or recreate table
- * - Uses DELETE FROM <table> (clears records only)
- * - Preserves table structure, constraints, and data types
+ * - Preserves table structure, existing records, constraints, and data types
+ * - By default preserves existing records (append mode)
  * - Transactional (atomic: rollback on any error so data is not lost)
  *
  * @param {string} targetTableName - Name of table to update
  * @param {Array<Object>} rows - Data rows to insert
- * @returns {Promise<{success: boolean, rowCount: number, durationMs: number}>}
+ * @param {Object} [options] - Optional sync configuration
+ * @param {boolean} [options.clearExisting=false] - Whether to delete previous records before inserting (default: false)
+ * @returns {Promise<{success: boolean, rowCount: number, durationMs: number, tableName: string}>}
  */
-async function syncTableData(targetTableName, rows) {
+async function syncTableData(targetTableName, rows, options = {}) {
   if (!rows || !Array.isArray(rows)) {
     throw new Error('Rows must be an array of records.');
   }
@@ -112,6 +115,7 @@ async function syncTableData(targetTableName, rows) {
   const pool = getPostgresPool();
   const client = await getClientWithRetry(pool);
   const startTime = Date.now();
+  const shouldClear = options && options.clearExisting === true;
 
   try {
     // 1. Resolve exact table name in current schema
@@ -169,9 +173,13 @@ async function syncTableData(targetTableName, rows) {
     await client.query('BEGIN');
     console.log(`🔄 Transaction started: Updating table "${resolvedTableName}"...`);
 
-    // 4. Clear ONLY existing records (preserve structure, columns, constraints)
-    await client.query(`DELETE FROM "${resolvedTableName}"`);
-    console.log(`🧹 Cleared existing records from "${resolvedTableName}".`);
+    // 4. Data retention handling: Keep existing data by default unless explicitly asked to clear
+    if (shouldClear) {
+      await client.query(`DELETE FROM "${resolvedTableName}"`);
+      console.log(`🧹 Cleared existing records from "${resolvedTableName}".`);
+    } else {
+      console.log(`ℹ️ Preserving existing records in "${resolvedTableName}". Appending ${rows.length} new record(s)...`);
+    }
 
     // 5. Insert new records if any
     let insertedCount = 0;
@@ -207,12 +215,16 @@ async function syncTableData(targetTableName, rows) {
         act_category: ['act_catagory', 'category'],
         level_pos: ['level', 'bom_level', 'pos_level'],
         current_parent: ['parent_item', 'parent'],
-        child_item: ['component_item', 'child'],
+        child_item: ['item', 'component_item', 'child', 'item_code'],
+        item: ['child_item', 'component_item', 'child', 'item_code'],
         current_parent_desc: ['parent_desc', 'parent_description'],
-        child_item_desc: ['child_desc', 'child_description', 'component_desc'],
+        child_item_desc: ['description', 'child_desc', 'child_description', 'component_desc'],
+        description: ['child_item_desc', 'item_description', 'child_desc', 'component_desc'],
         parent_qty: ['parent_quantity'],
         child_qty: ['child_quantity'],
         component_quantity: ['comp_quantity', 'comp_qty'],
+        top_assembly: ['top_assembly_id', 'assembly_item', 'assembly_segment1', 'root_assembly', 'top_assembly_item', 'top_item'],
+        top_assembly_id: ['top_assembly', 'assembly_item', 'assembly_segment1', 'root_assembly'],
       };
 
       Object.keys(oracleSample).forEach((oracleKey) => {
@@ -299,4 +311,3 @@ module.exports = {
   testPostgresConnection,
   syncTableData,
 };
-

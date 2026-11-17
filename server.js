@@ -267,7 +267,9 @@ async function handleCustomSync(req, res) {
     }
 
     console.log(`🔌 [Custom Sync] Updating PostgreSQL table '${tableName}' with ${recordsToSync.length} record(s)...`);
-    const pgResult = await postgres.syncTableData(tableName, recordsToSync);
+    const pgResult = await postgres.syncTableData(tableName, recordsToSync, {
+      clearExisting: req.body?.clearExisting === true,
+    });
 
     const totalDurationMs = Date.now() - startTime;
     const successMsg = `Successfully updated PostgreSQL table '${pgResult.tableName}' with ${pgResult.rowCount} record(s) in ${totalDurationMs} ms.`;
@@ -346,9 +348,11 @@ app.post('/api/sync/:queryId', async (req, res) => {
 
     console.log(`✅ [Sync] Oracle returned ${rows.length} record(s) in ${oracleDurationMs} ms.`);
 
-    // Step 2: Connect to PostgreSQL (Neon DB), clear existing records, insert new output in transaction
+    // Step 2: Connect to PostgreSQL (Neon DB), insert new output in transaction (preserving existing data)
     console.log(`🔌 [Sync] Step 2/2: Updating PostgreSQL (Neon DB) table '${config.targetTable}'...`);
-    const pgResult = await postgres.syncTableData(config.targetTable, rows);
+    const pgResult = await postgres.syncTableData(config.targetTable, rows, {
+      clearExisting: req.body?.clearExisting === true,
+    });
 
     const totalDurationMs = Date.now() - startTime;
     const successMsg = `Successfully updated PostgreSQL table '${pgResult.tableName}' with ${pgResult.rowCount} record(s) in ${totalDurationMs} ms.`;
